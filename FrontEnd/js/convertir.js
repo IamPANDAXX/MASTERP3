@@ -101,7 +101,7 @@ convertirBtn.addEventListener('click', async () => {
 //api de contador dentro del convertidor
 (async () => {
   try {
-    const resp = await fetch("https://masterp3.onrender.com/api/visitas");
+    const resp = await fetch("https://masterp3.onrender.com/api/visitas"); //fetch("http://localhost:3000/api/visitas") SOLO LOCAL
     const data = await resp.json();
 
     const spanContador = document.getElementById("contadorNumero");

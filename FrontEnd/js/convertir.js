@@ -65,8 +65,9 @@ convertirBtn.addEventListener('click', async () => {
     }
   });
 
+  //llamada de api del convertidor
   try {
-    const response = await fetch ("https://mi-backend.onrender.com/api/convert", {
+    const response = await fetch ("https://masterp3.onrender.com/api/convert", {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ url })
@@ -97,3 +98,17 @@ convertirBtn.addEventListener('click', async () => {
     });
   }
 });
+//api de contador dentro del convertidor
+(async () => {
+  try {
+    const resp = await fetch("https://masterp3.onrender.com/api/visitas");
+    const data = await resp.json();
+
+    const spanContador = document.getElementById("contadorNumero");
+    if (spanContador) {
+      spanContador.textContent = data.visitas;
+    }
+  } catch (err) {
+    console.error("No se pudo obtener visitas:", err);
+  }
+})();

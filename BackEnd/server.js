@@ -1,6 +1,6 @@
-const express = require("express");
-const ytdl = require("ytdl-core");
-const cors = require("cors");
+import express from "express";
+import ytdl from "ytdl-core";
+import cors from "cors";
 
 const app = express();
 app.use(cors());

@@ -2,9 +2,6 @@ const express = require("express");
 const ytdl = require("ytdl-core");
 const cors = require("cors");
 
-const fs = require("fs");
-const path = require("path");
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -32,26 +29,3 @@ app.post("/api/convert", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor corriendo en ${PORT}`));
 
-//ruta visitas globales
-app.get("/api/visitas", (req, res) => {
-  const filePath = path.join(__dirname, "visitas.json");
-
-  fs.readFile(filePath, "utf8", (err, data) => {
-    if (err) {
-      console.error("Error al leer visitas.json:", err);
-      return res.status(500).json({ error: "Error al contar visitas" });
-    }
-
-    let visitas = JSON.parse(data);
-    visitas.contador += 1;
-
-    fs.writeFile(filePath, JSON.stringify(visitas), (err) => {
-      if (err) {
-        console.error("Error al escribir visitas.json:", err);
-        return res.status(500).json({ error: "Error al guardar visita" });
-      }
-
-      res.json({ visitas: visitas.contador });
-    });
-  });
-});

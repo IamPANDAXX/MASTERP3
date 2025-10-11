@@ -3,7 +3,7 @@ const agregarBtn = document.getElementById('agregarBtn');
 const convertirBtn = document.getElementById('convertirBtn');
 const descargaList = document.getElementById('descargaList');
 
-//limpiar la URL
+// Limpiar la URL de YouTube
 function limpiarYoutubeUrl(url) {
   try {
     const urlObj = new URL(url);
@@ -25,21 +25,7 @@ function limpiarYoutubeUrl(url) {
   }
 }
 
-//obtener título desde YouTube oEmbed
-async function obtenerTituloYoutube(url) {
-  try {
-    const endpoint = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
-    const resp = await fetch(endpoint);
-    if (!resp.ok) throw new Error("No se pudo obtener el título");
-    const data = await resp.json();
-    return data.title;
-  } catch (err) {
-    console.error('Error al obtener título:', err);
-    return null;
-  }
-}
-
-//agregar a lista
+// Agregar URL a la lista
 agregarBtn.addEventListener('click', async () => {
   const url = input.value.trim();
   if (!url) {
@@ -52,14 +38,15 @@ agregarBtn.addEventListener('click', async () => {
     return;
   }
 
-  const titulo = await obtenerTituloYoutube(url);
+  const urlLimpia = limpiarYoutubeUrl(url) || url;
+
   const li = document.createElement('li');
-  li.textContent = titulo || url;
+  li.textContent = urlLimpia;
   descargaList.appendChild(li);
   input.value = '';
 });
 
-//convertir usando nueva librería
+// Convertir video a MP3
 convertirBtn.addEventListener('click', async () => {
   const url = input.value.trim();
   if (!url) {
@@ -72,6 +59,10 @@ convertirBtn.addEventListener('click', async () => {
     return;
   }
 
+  const li = document.createElement('li');
+  li.textContent = `Procesando: ${url}`;
+  descargaList.appendChild(li);
+
   Swal.fire({
     icon: 'info',
     title: 'Procesando...',
@@ -81,7 +72,7 @@ convertirBtn.addEventListener('click', async () => {
   });
 
   try {
-    const resp = await fetch("/convert", {
+    const resp = await fetch("https://masterp3.onrender.com/convert", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url })
@@ -91,14 +82,16 @@ convertirBtn.addEventListener('click', async () => {
     if (!data.success) throw new Error(data.error || "Error desconocido");
 
     const titulo = data.title || "audio";
-
-    //crear enlace para descargar con nombre del video
+    const baseUrl = window.location.origin;
     const link = document.createElement("a");
-    link.href = data.file;
+    link.href = baseUrl + data.file;
     link.download = `${titulo}.mp3`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    // Actualiza la lista de descargas
+    li.textContent = `Descargado: ${titulo}`;
 
     Swal.fire({
       icon: 'success',
@@ -110,6 +103,7 @@ convertirBtn.addEventListener('click', async () => {
     input.value = '';
   } catch (err) {
     console.error(err);
+    li.textContent = `Error: ${url}`;
     Swal.fire({
       icon: 'error',
       title: 'Error',

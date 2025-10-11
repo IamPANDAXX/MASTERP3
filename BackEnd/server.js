@@ -29,7 +29,7 @@ if (!fs.existsSync(downloadsDir)) fs.mkdirSync(downloadsDir, { recursive: true }
 app.use(express.static(publicPath));
 
 //servir los mp3 guardados
-app.use("../downloads", express.static(downloadsDir));
+app.use("/downloads", express.static(downloadsDir));
 
 //endpoint de conversión
 app.post("/convert", (req, res) => {
@@ -64,7 +64,7 @@ app.post("/convert", (req, res) => {
       res.json({
         success: true,
         title: safeTitle,
-        file: `../downloads/${encodeURIComponent(fileName)}`
+        file: `/downloads/${encodeURIComponent(fileName)}`
       });
     });
 

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mastermp3-backend
+    env: node
+    region: oregon 
+    plan: free
+    buildCommand: |
+      apt-get update && apt-get install -y ffmpeg
+      npm install
+    startCommand: node server.js
+    autoDeploy: true

@@ -3,7 +3,7 @@ const agregarBtn = document.getElementById('agregarBtn');
 const convertirBtn = document.getElementById('convertirBtn');
 const descargaList = document.getElementById('descargaList');
 
-// Limpiar la URL de YouTube
+//limpiar la URL
 function limpiarYoutubeUrl(url) {
   try {
     const urlObj = new URL(url);
@@ -25,7 +25,21 @@ function limpiarYoutubeUrl(url) {
   }
 }
 
-// Agregar URL a la lista
+//obtener título desde YouTube oEmbed
+//async function obtenerTituloYoutube(url) {
+  //try {
+   // const endpoint = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+   // const resp = await fetch(endpoint);
+  //  if (!resp.ok) throw new Error("No se pudo obtener el título");
+   // const data = await resp.json();
+   // return data.title;
+  //} catch (err) {
+   // console.error('Error al obtener título:', err);
+   // return null;
+ // }
+//}
+
+//agregar a lista
 agregarBtn.addEventListener('click', async () => {
   const url = input.value.trim();
   if (!url) {
@@ -38,15 +52,14 @@ agregarBtn.addEventListener('click', async () => {
     return;
   }
 
-  const urlLimpia = limpiarYoutubeUrl(url) || url;
-
+  //const titulo = await obtenerTituloYoutube(url);
   const li = document.createElement('li');
-  li.textContent = urlLimpia;
+  li.textContent = url;
   descargaList.appendChild(li);
   input.value = '';
 });
 
-// Convertir video a MP3
+//convertir usando nueva librería
 convertirBtn.addEventListener('click', async () => {
   const url = input.value.trim();
   if (!url) {
@@ -58,10 +71,6 @@ convertirBtn.addEventListener('click', async () => {
     });
     return;
   }
-
-  const li = document.createElement('li');
-  li.textContent = `Procesando: ${url}`;
-  descargaList.appendChild(li);
 
   Swal.fire({
     icon: 'info',
@@ -82,16 +91,15 @@ convertirBtn.addEventListener('click', async () => {
     if (!data.success) throw new Error(data.error || "Error desconocido");
 
     const titulo = data.title || "audio";
-    const baseUrl = window.location.origin;
+
+    //crear enlace para descargar con nombre del video
+    const baseUrl = window.location.origin; 
     const link = document.createElement("a");
-    link.href = baseUrl + data.file;
+    link.href = baseUrl + data.file; // ahora apunta correctamente
     link.download = `${titulo}.mp3`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    // Actualiza la lista de descargas
-    li.textContent = `Descargado: ${titulo}`;
 
     Swal.fire({
       icon: 'success',
@@ -103,7 +111,6 @@ convertirBtn.addEventListener('click', async () => {
     input.value = '';
   } catch (err) {
     console.error(err);
-    li.textContent = `Error: ${url}`;
     Swal.fire({
       icon: 'error',
       title: 'Error',

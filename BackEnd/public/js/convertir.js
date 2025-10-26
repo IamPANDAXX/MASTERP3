@@ -81,7 +81,11 @@ convertirBtn.addEventListener('click', async () => {
   });
 
   try {
-    const resp = await fetch("http://localhost:3000/convert", {
+    const API_BASE = window.location.hostname.includes("localhost")
+  ? "http://localhost:3000"
+  : "https://mastermp3.onrender.com";
+
+    const resp = await fetch("`${API_BASE}/convert`", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url })

@@ -26,18 +26,18 @@ function limpiarYoutubeUrl(url) {
 }
 
 //obtener título desde YouTube oEmbed
-//async function obtenerTituloYoutube(url) {
-  //try {
-   // const endpoint = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
-   // const resp = await fetch(endpoint);
-  //  if (!resp.ok) throw new Error("No se pudo obtener el título");
-   // const data = await resp.json();
-   // return data.title;
-  //} catch (err) {
-   // console.error('Error al obtener título:', err);
-   // return null;
- // }
-//}
+async function obtenerTituloYoutube(url) {
+  try {
+    const endpoint = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+    const resp = await fetch(endpoint);
+    if (!resp.ok) throw new Error("No se pudo obtener el título");
+    const data = await resp.json();
+    return data.title;
+  } catch (err) {
+    console.error('Error al obtener título:', err);
+    return null;
+ }
+}
 
 //agregar a lista
 agregarBtn.addEventListener('click', async () => {
@@ -52,9 +52,9 @@ agregarBtn.addEventListener('click', async () => {
     return;
   }
 
-  //const titulo = await obtenerTituloYoutube(url);
+  const titulo = await obtenerTituloYoutube(url);
   const li = document.createElement('li');
-  li.textContent = url;
+  li.textContent = titulo ? titulo : `Video sin título (${url})`;
   descargaList.appendChild(li);
   input.value = '';
 });
@@ -81,7 +81,7 @@ convertirBtn.addEventListener('click', async () => {
   });
 
   try {
-    const resp = await fetch("https://masterp3.onrender.com/convert", {
+    const resp = await fetch("http://localhost:3000/convert", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url })
@@ -92,7 +92,7 @@ convertirBtn.addEventListener('click', async () => {
 
     const titulo = data.title || "audio";
 
-    //crear enlace para descargar con nombre del video
+    //crea enlace para descargar con nombre del video
     const baseUrl = window.location.origin; 
     const link = document.createElement("a");
     link.href = baseUrl + data.file; // ahora apunta correctamente

@@ -429,3 +429,59 @@ body{
   font-size: 14px;
   opacity: 0.95;
 }
+
+/****FOOTER*****/
+
+.footer-general{
+  width: 100%;
+  z-index: 999;
+  background-color: #ffffff;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.logo-footer{
+  width: 40%;
+  height: auto;
+
+}
+.socialmedia-footer{
+  width: 25%;
+  height: auto;
+  padding: 5px;
+}
+
+/*imgs-logo*/
+
+.instagram-footer{
+  width: 50px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 15px;
+  transition: transform 0.6s ease-in;
+  
+}
+.tiktok-footer{
+  width: 50px;
+  height: auto;
+  border-radius: 15px;
+  object-fit: cover;
+  transition: transform 0.6s ease-in;
+}
+.github-footer{
+  width: 50px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 15px;
+  transition: transform 0.6s ease-in;
+}
+
+.instagram-footer:hover,
+.tiktok-footer:hover,
+.github-footer:hover{
+  transform: scale(1.1);
+}

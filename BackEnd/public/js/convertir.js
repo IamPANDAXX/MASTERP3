@@ -81,9 +81,9 @@ convertirBtn.addEventListener('click', async () => {
   });
 
   try {
-    const API_BASE = window.location.hostname.includes("localhost")
+    const API_BASE = window.location.origin.includes("localhost")
   ? "http://localhost:3000"
-  : "https://masterp3.onrender.com";
+  : window.location.origin;
 
     const resp = await fetch(`${API_BASE}/convert`, {
       method: "POST",

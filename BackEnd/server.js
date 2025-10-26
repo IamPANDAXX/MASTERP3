@@ -74,7 +74,7 @@ app.post("/convert", (req, res) => {
 });
 
 //ruta raíz, enviar index.html explícitamente (buena práctica debug)
-app.get("/", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(publicPath,"index.html"));
 });
 

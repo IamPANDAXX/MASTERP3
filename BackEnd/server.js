@@ -49,12 +49,11 @@ app.post("/convert", (req, res) => {
 
     //let title = (stdoutTitle || "").trim() || "audio_sin_nombre";
 
-    const safeTitle = `audio_${Date.now()}`;//se va el titulo
+    const safeTitle = `audio_${Date.now()}`;
     const fileName = `${safeTitle}.mp3`;
     const outputPath = path.join(downloadsDir, fileName);
 
-    //descarga el audio sin pedos, directamente
-    const command = `python -m yt_dlp --no-playlist -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+    const command = `python -m yt_dlp --cookies "./cookies.txt" -x --audio-format mp3 -o "${outputPath}" "${url}"`;
 
     const child = exec(command, (errDown) => {
       if (errDown) {

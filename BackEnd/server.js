@@ -41,7 +41,9 @@ app.post("/convert", (req, res) => {
   console.log("🎬 Procesando:", url);
 
   //obtener título
-  exec(`python -m yt_dlp --get-title "${url}"`, (errTitle, stdoutTitle) => {
+  const cookiesPath = path.join(__dirname, "cookies.txt");
+
+  exec(`python -m yt_dlp --cookies "${cookiesPath}" --get-title "${url}"`, (errTitle, stdoutTitle) => {
     if (errTitle) {
       console.error("❌ Error al obtener título:", errTitle.message);
       return res.status(500).json({ error: "No se pudo obtener el título" });
@@ -52,8 +54,8 @@ app.post("/convert", (req, res) => {
     const fileName = `${safeTitle}.mp3`;
     const outputPath = path.join(downloadsDir, fileName);
 
-    const command = `python -m yt_dlp --cookies "./cookies.txt" -x --audio-format mp3 -o "${outputPath}" "${url}"`;
-    
+    const command = `python -m yt_dlp --cookies "${cookiesPath}" -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+
     const child = exec(command, (errDown) => {
       if (errDown) {
         console.error("❌ Error al convertir:", errDown.message);

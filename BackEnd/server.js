@@ -52,7 +52,8 @@ app.post("/convert", (req, res) => {
     const fileName = `${safeTitle}.mp3`;
     const outputPath = path.join(downloadsDir, fileName);
 
-    const command = `python -m yt_dlp -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+    const command = `python -m yt_dlp --cookies "./cookies.txt" -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+
     const child = exec(command, (errDown) => {
       if (errDown) {
         console.error("❌ Error al convertir:", errDown.message);

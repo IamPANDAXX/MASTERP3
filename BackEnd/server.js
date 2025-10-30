@@ -5,6 +5,7 @@ import { exec } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import "/keepAlive.js";
 
 const app = express();
 app.use(cors());
@@ -86,3 +87,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`📁 Sirviendo archivos desde: ${publicPath}`);
 });
+

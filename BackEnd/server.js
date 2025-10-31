@@ -5,14 +5,14 @@ import { exec } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
-import fetch from "node-fetch"; // ✨ usamos esto para obtener el título automáticamente
+import fetch from "node-fetch"; //usamos esto para obtener el título automáticamente
 import "./keepAlive.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ESM __dirname
+//ESM __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -20,20 +20,20 @@ const __dirname = path.dirname(__filename);
 const publicPath = path.join(__dirname, "public");
 const downloadsDir = path.join(__dirname, "../downloads");
 
-// Debug info
+//debug info
 console.log("📁 Ruta detectada para frontend:", publicPath);
 console.log("📁 Ruta detectada para descargas:", downloadsDir);
 
-// Crear carpeta de descargas si no existe
+//crear carpeta de descargas si no existe
 if (!fs.existsSync(downloadsDir)) fs.mkdirSync(downloadsDir, { recursive: true });
 
-// Servir archivos estáticos (frontend)
+//servir archivos estáticos (frontend)
 app.use(express.static(publicPath));
 
-// Servir MP3 descargados
+//servir MP3 descargados
 app.use("/downloads", express.static(downloadsDir));
 
-// 🌟 Función para obtener el título usando noembed (sin cookies)
+//función para obtener el título usando noembed (sin cookies)
 async function obtenerTitulo(url) {
   try {
     const response = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
@@ -45,7 +45,7 @@ async function obtenerTitulo(url) {
   }
 }
 
-// 🎧 Endpoint principal de conversión
+//Endpoint principal de conversión
 app.post("/convert", async (req, res) => {
   const { url } = req.body;
 
@@ -55,14 +55,27 @@ app.post("/convert", async (req, res) => {
 
   console.log("🎬 Procesando:", url);
 
-  // Obtener título con noembed
+  //verificamos si es de youtube
+  const esYouTube = /youtube\.com|youtu\.be/.test(url);
+
+  //obtener título con noembed
   const title = await obtenerTitulo(url);
   const safeTitle = title.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
   const fileName = `${safeTitle}.mp3`;
   const outputPath = path.join(downloadsDir, fileName);
 
-  // Comando yt-dlp (sin cookies.txt)
-  const command = `python -m yt_dlp -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+  //comando base
+  let command;
+  if (esYouTube) {
+    //usa cookies si es YouTube
+    const cookiesPath = path.join(__dirname, "cookies.txt");
+    command = `python -m yt_dlp --cookies "${cookiesPath}" -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+    console.log("🍪 Modo YouTube activado con cookies");
+  } else {
+    //sin cookies para otros sitios
+    command = `python -m yt_dlp -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+    console.log("🎵 Modo sin cookies (sitio no YouTube)");
+  }
 
   const child = exec(command, (errDown) => {
     if (errDown) {
@@ -82,12 +95,12 @@ app.post("/convert", async (req, res) => {
   child.stderr?.on("data", (d) => console.log("yt-dlp error:", d.toString().trim()));
 });
 
-// 🏠 Ruta raíz (sirve el index)
+//ruta raíz (sirve el index)
 app.get("/", (req, res) => {
   res.sendFile(path.join(publicPath, "index.html"));
 });
 
-// 🚀 Arranque del servidor
+//arranque del servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

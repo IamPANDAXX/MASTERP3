@@ -5,34 +5,35 @@ import { exec } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import fetch from "node-fetch"; // ✨ usamos esto para obtener el título automáticamente
 import "./keepAlive.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-//ESM __dirname
+// ESM __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-//rutas (ajustadas a tu estructura: public dentro de backend, downloads en la raíz del proyecto)
+// Rutas (public dentro de backend, downloads fuera)
 const publicPath = path.join(__dirname, "public");
 const downloadsDir = path.join(__dirname, "../downloads");
 
-//debug info
+// Debug info
 console.log("📁 Ruta detectada para frontend:", publicPath);
 console.log("📁 Ruta detectada para descargas:", downloadsDir);
 
-//crear downloads si no existe
+// Crear carpeta de descargas si no existe
 if (!fs.existsSync(downloadsDir)) fs.mkdirSync(downloadsDir, { recursive: true });
 
-//servir archivos estáticos de frontend
+// Servir archivos estáticos (frontend)
 app.use(express.static(publicPath));
 
-//servir los mp3 guardados
+// Servir MP3 descargados
 app.use("/downloads", express.static(downloadsDir));
 
-//para obtener el titulo usando noembed
+// 🌟 Función para obtener el título usando noembed (sin cookies)
 async function obtenerTitulo(url) {
   try {
     const response = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
@@ -44,8 +45,8 @@ async function obtenerTitulo(url) {
   }
 }
 
-//endpoint de conversión
-app.post("/convert", (req, res) => {
+// 🎧 Endpoint principal de conversión
+app.post("/convert", async (req, res) => {
   const { url } = req.body;
 
   if (!url || !url.startsWith("http")) {
@@ -54,45 +55,41 @@ app.post("/convert", (req, res) => {
 
   console.log("🎬 Procesando:", url);
 
-  //obtener título
+  // Obtener título con noembed
+  const title = await obtenerTitulo(url);
+  const safeTitle = title.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
+  const fileName = `${safeTitle}.mp3`;
+  const outputPath = path.join(downloadsDir, fileName);
 
+  // Comando yt-dlp (sin cookies.txt)
+  const command = `python -m yt_dlp -x --audio-format mp3 -o "${outputPath}" "${url}"`;
 
-    const title = await obtenerTitulo(url);
-    const safeTitle = title.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
-    const fileName = `${safeTitle}.mp3`;
-    const outputPath = path.join(downloadsDir, fileName);
+  const child = exec(command, (errDown) => {
+    if (errDown) {
+      console.error("❌ Error al convertir:", errDown.message);
+      return res.status(500).json({ error: "Error al procesar el video" });
+    }
 
-    //comando yt-dlp sin cookies
-    const command = `python -m yt_dlp -x --audio-format mp3 -o "${outputPath}" "${url}"`;
-
-
-    const child = exec(command, (errDown) => {
-      if (errDown) {
-        console.error("❌ Error al convertir:", errDown.message);
-        return res.status(500).json({ error: "Error al procesar el video" });
-      }
-
-      console.log(`✅ Conversión completada: ${fileName}`);
-      //devolvemos la ruta pública para que el front la use
-      res.json({
-        success: true,
-        title: safeTitle,
-        file: `/downloads/${encodeURIComponent(fileName)}`
-      });
+    console.log(`✅ Conversión completada: ${fileName}`);
+    res.json({
+      success: true,
+      title: safeTitle,
+      file: `/downloads/${encodeURIComponent(fileName)}`
     });
-
-    child.stdout?.on("data", (d) => console.log("yt-dlp:", d.toString().trim()));
-    child.stderr?.on("data", (d) => console.log("yt-dlp error:", d.toString().trim()));
   });
 
-//ruta raíz, enviar index.html explícitamente (buena práctica debug)
-app.get("/", (req, res) => {
-  res.sendFile(path.join(publicPath,"index.html"));
+  child.stdout?.on("data", (d) => console.log("yt-dlp:", d.toString().trim()));
+  child.stderr?.on("data", (d) => console.log("yt-dlp error:", d.toString().trim()));
 });
 
+// 🏠 Ruta raíz (sirve el index)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(publicPath, "index.html"));
+});
+
+// 🚀 Arranque del servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   console.log(`📁 Sirviendo archivos desde: ${publicPath}`);
 });
-

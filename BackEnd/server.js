@@ -32,9 +32,22 @@ app.use(express.static(publicPath));
 //servir los mp3 guardados
 app.use("/downloads", express.static(downloadsDir));
 
+//para obtener el titulo usando noembed
+async function obtenerTitulo(url) {
+  try {
+    const response = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
+    const data = await response.json();
+    return data.title || "audio_sin_nombre";
+  } catch (error) {
+    console.error("⚠️ Error al obtener título:", error.message);
+    return "audio_sin_nombre";
+  }
+}
+
 //endpoint de conversión
 app.post("/convert", (req, res) => {
   const { url } = req.body;
+
   if (!url || !url.startsWith("http")) {
     return res.status(400).json({ error: "URL no válida" });
   }
@@ -42,20 +55,16 @@ app.post("/convert", (req, res) => {
   console.log("🎬 Procesando:", url);
 
   //obtener título
-  const cookiesPath = path.join(__dirname, "cookies.txt");
 
-  exec(`python -m yt_dlp --cookies "${cookiesPath}" --get-title "${url}"`, (errTitle, stdoutTitle) => {
-    if (errTitle) {
-      console.error("❌ Error al obtener título:", errTitle.message);
-      return res.status(500).json({ error: "No se pudo obtener el título" });
-    }
 
-    let title = (stdoutTitle || "").trim() || "audio_sin_nombre";
+    const title = await obtenerTitulo(url);
     const safeTitle = title.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
     const fileName = `${safeTitle}.mp3`;
     const outputPath = path.join(downloadsDir, fileName);
 
-    const command = `python -m yt_dlp --cookies "${cookiesPath}" -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+    //comando yt-dlp sin cookies
+    const command = `python -m yt_dlp -x --audio-format mp3 -o "${outputPath}" "${url}"`;
+
 
     const child = exec(command, (errDown) => {
       if (errDown) {
@@ -75,7 +84,6 @@ app.post("/convert", (req, res) => {
     child.stdout?.on("data", (d) => console.log("yt-dlp:", d.toString().trim()));
     child.stderr?.on("data", (d) => console.log("yt-dlp error:", d.toString().trim()));
   });
-});
 
 //ruta raíz, enviar index.html explícitamente (buena práctica debug)
 app.get("/", (req, res) => {

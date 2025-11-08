@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTERP3</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="shortcut icon" href="imgs/logo-masterp3-icon-png.png" type="image/x-icon">
+
+    <!--libreria de sweetalerts2-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    
+
+
+</head>
+<body>
+    <nav class="top-menu">
+
+        <div class="burguer-menu">☰</div>
+
+        <ul class="menu-list">
+            <li class="menu-links"><a class="menu-links" href="">Sobre Nosotros</a></li>
+            <li class="menu-links"><a class="menu-links" href="">FAQ</a></li>
+            <li class="menu-links"><a class="menu-links" href="">MASTERP3</a></li>
+        </ul>
+    </nav>
+
+    <div class="contador-visitas" id="contadorVisitas">
+        Visitantes: <span id="contadorNumero"></span>
+    </div>
+
+    <div class="background-container">
+        <img class="background-image" src="imgs/MASTERP3-logo-sinfondo.png" alt="">
+    </div>
+
+    <div class="container-general">
+
+      <div class="titulo-container">
+       <img class="logo-converter" src="imgs/MASTERP3-newlogo-sinfondo.png" alt=""> 
+       </div>
+    
+
+    <div class="input-container">
+        <input class="input-busqueda" type="text" name="" id="urlInput" placeholder="Pega el URL del video aquí...">
+        <button class="boton-agregar" id="agregarBtn">+</button>
+        <button class="boton-convertir" id="convertirBtn">Convertir</button>
+    </div>
+
+    <!--LABEL DE LAS CANCIONES AGREGADAS-->
+    <h3 class="lista-titulo">Lista de descargas:</h3>
+    <ul id="descargaList" class="lista-descarga"></ul>
+
+    <div class="container-pasos">
+        
+        <button class="boton-pasos" data-modal="modal1">Paso 1</button>
+        <!--modalvermas(video o capturas)-->
+        <div class="modal" id="modal1">
+            <div class="modal-content">
+                <span class="boton-cerrar">&times;</span>
+                <p class="parrafo-modal">1. Como primer instancia debes entrar a Youtube y Copiar el ULR del video que quieras convertir.</p>
+                <video class="video-apoyo" controls autoplay loop muted src=""></video>
+            </div>
+        </div>
+        <!--modalvermas-->
+
+       <button class="boton-pasos" data-modal="modal2">Paso 2</button> 
+        <!--modalvermas(video o capturas)-->
+        <div class="modal" id="modal2">
+            <div class="modal-content">
+                <span class="boton-cerrar">&times;</span>
+                <p class="parrafo-modal">2. Al copiar el URL de Youtube habre nuevamente en navegador con la pagina y pega el URL.</p>
+                <video class="video-apoyo" controls autoplay loop muted src=""></video>
+            </div>
+        </div>
+        <!--modalvermas-->
+
+        <button class="boton-pasos" data-modal="modal3">Paso 3</button>
+        <!--modalvermas(video o capturas)-->
+        <div class="modal" id="modal3">
+            <div class="modal-content">
+                <span class="boton-cerrar">&times;</span>
+                <p class="parrafo-modal">3. Despues de pegar el URL tendras dos opciones "+" para agregarlo a una lista o "Convertir" para descargar una sola cancion. </p>
+                <video class="video-apoyo" controls autoplay loop muted src=""></video>
+                
+            </div>
+        </div>
+        <!--modalvermas-->
+        
+    </div>
+    </div>
+
+    <footer class="footer-general">
+        <div class="logo-footer">
+            <img src="" alt="">
+        </div>
+        <div class="socialmedia-footer">
+            <img class="instagram-footer" src="imgs/instagram.png" alt="">
+            <img class="tiktok-footer" src="imgs/tik-tok.png" alt="">
+            <img class="github-footer" src="imgs/github.png" alt="">
+        </div>
+        <div class=""></div>
+    </footer>
+    <script src="js/modal.js"></script>
+    <script src="js/logo.js"></script>
+    <script src="js/convertir.js"></script>
+    <script src="js/menu.js"></script>
+</body>
+</html>

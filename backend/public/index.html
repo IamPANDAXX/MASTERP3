@@ -10,38 +10,37 @@
     <!--libreria de sweetalerts2-->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    
+    <!--librerias AOS-->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css" />
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
 
 </head>
 <body>
-    <nav class="top-menu">
+    <nav class="top-menu" data-aos="fade-down">
 
         <div class="burguer-menu">☰</div>
 
         <ul class="menu-list">
             <li class="menu-links"><a class="menu-links" href="">Sobre Nosotros</a></li>
             <li class="menu-links"><a class="menu-links" href="">FAQ</a></li>
-            <li class="menu-links"><a class="menu-links" href="">MASTERP3</a></li>
+            <li class="menu-links"><a class="menu-links" href="">MASTERSWEB</a></li>
         </ul>
     </nav>
 
-    <div class="contador-visitas" id="contadorVisitas">
-        Visitantes: <span id="contadorNumero"></span>
-    </div>
 
-    <div class="background-container">
+    <div class="background-container" data-aos="zoom-in">
         <img class="background-image" src="imgs/MASTERP3-logo-sinfondo.png" alt="">
     </div>
 
     <div class="container-general">
 
       <div class="titulo-container">
-       <img class="logo-converter" src="imgs/MASTERP3-newlogo-sinfondo.png" alt=""> 
+       <img class="logo-converter" src="imgs/MASTERP3-newlogo-sinfondo.png" alt="" data-aos="fade-in"> 
        </div>
     
 
-    <div class="input-container">
+    <div class="input-container" data-aos="fade-up">
         <input class="input-busqueda" type="text" name="" id="urlInput" placeholder="Pega el URL del video aquí...">
         <button class="boton-agregar" id="agregarBtn">+</button>
         <button class="boton-convertir" id="convertirBtn">Convertir</button>
@@ -51,7 +50,7 @@
     <h3 class="lista-titulo">Lista de descargas:</h3>
     <ul id="descargaList" class="lista-descarga"></ul>
 
-    <div class="container-pasos">
+    <div class="container-pasos" data-aos="slide-left">
         
         <button class="boton-pasos" data-modal="modal1">Paso 1</button>
         <!--modalvermas(video o capturas)-->
@@ -91,19 +90,26 @@
     </div>
 
     <footer class="footer-general">
+        <div class="socialmedia-footer">
+            <img class="instagram-footer" src="imgs/instagram.png" alt="" onclick="window.open('https://www.instagram.com/iampandaxx.android/', '_blank')">
+            <img class="tiktok-footer" src="imgs/tik-tok.png" alt="" onclick="window.open('https://www.tiktok.com/@iampandaxx?is_from_webapp=1&sender_device=pc', '_blank')">
+
+        </div>
         <div class="logo-footer">
             <img src="" alt="">
         </div>
-        <div class="socialmedia-footer">
-            <img class="instagram-footer" src="imgs/instagram.png" alt="">
-            <img class="tiktok-footer" src="imgs/tik-tok.png" alt="">
-            <img class="github-footer" src="imgs/github.png" alt="">
+        <div class="derechos-agradecimientos">
+            <p class="derechos-mastersweb">© 2025 | Todos los derechos reservados a <strong>MASTERSWEB</strong></p>
         </div>
-        <div class=""></div>
+        
     </footer>
     <script src="js/modal.js"></script>
     <script src="js/logo.js"></script>
     <script src="js/convertir.js"></script>
     <script src="js/menu.js"></script>
+
+    <script>
+      AOS.init({ duration: 1200 });
+    </script>
 </body>
 </html>

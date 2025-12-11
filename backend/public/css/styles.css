@@ -13,6 +13,7 @@ body{
     padding: 20px 50px;
     display: flex;
     flex-wrap: wrap;
+    overflow: hidden;
     justify-content: center;
     gap: 30px;
     margin-bottom: 50px;
@@ -221,6 +222,7 @@ body{
 .boton-convertir{
   margin-left: 1px;
   padding: 6px;
+  cursor: pointer;
   border-radius: 0px 25px 25px 0px;
   background: linear-gradient(90deg, #ffffff, #f7f7f7);
   border: 1px solid transparent;
@@ -228,6 +230,7 @@ body{
 }
 
 .boton-agregar{
+  cursor: pointer;
   margin-left: 1px;
   padding: 6px;
   border-radius: 0px;
@@ -444,6 +447,14 @@ body{
   flex-wrap: wrap;
 }
 
+.derechos-agradecimientos{
+  width: 35%;
+  font-size: clamp(12px, 1vw, 16px);
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  margin: auto;
+
+}
+
 .logo-footer{
   width: 40%;
   height: auto;
@@ -451,8 +462,13 @@ body{
 }
 .socialmedia-footer{
   width: 25%;
-  height: auto;
-  padding: 5px;
+    height: auto;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
 }
 
 /*imgs-logo*/
@@ -462,23 +478,25 @@ body{
   height: auto;
   object-fit: cover;
   border-radius: 15px;
+  cursor: pointer;
   transition: transform 0.6s ease-in;
   
 }
 .tiktok-footer{
   width: 50px;
+  cursor: pointer;
   height: auto;
   border-radius: 15px;
   object-fit: cover;
   transition: transform 0.6s ease-in;
 }
-.github-footer{
+/*.github-footer{
   width: 50px;
   height: auto;
   object-fit: cover;
   border-radius: 15px;
   transition: transform 0.6s ease-in;
-}
+}*/
 
 .instagram-footer:hover,
 .tiktok-footer:hover,

@@ -50,7 +50,7 @@
     <h3 class="lista-titulo">Lista de descargas:</h3>
     <ul id="descargaList" class="lista-descarga"></ul>
 
-    <div class="container-pasos" data-aos="slide-left">
+    <div class="container-pasos" data-aos="slide-down">
         
         <button class="boton-pasos" data-modal="modal1">Paso 1</button>
         <!--modalvermas(video o capturas)-->
@@ -86,30 +86,32 @@
         </div>
         <!--modalvermas-->
         
+    </div> 
+    
     </div>
-    </div>
+    <footer class="footer-general" data-aos="fade-up">
+            <div class="socialmedia-footer">
+                <img class="instagram-footer" src="imgs/instagram.png" alt="" onclick="window.open('https://www.instagram.com/iampandaxx.android/', '_blank')">
+                <img class="tiktok-footer" src="imgs/tik-tok.png" alt="" onclick="window.open('https://www.tiktok.com/@iampandaxx?is_from_webapp=1&sender_device=pc', '_blank')">
 
-    <footer class="footer-general">
-        <div class="socialmedia-footer">
-            <img class="instagram-footer" src="imgs/instagram.png" alt="" onclick="window.open('https://www.instagram.com/iampandaxx.android/', '_blank')">
-            <img class="tiktok-footer" src="imgs/tik-tok.png" alt="" onclick="window.open('https://www.tiktok.com/@iampandaxx?is_from_webapp=1&sender_device=pc', '_blank')">
-
-        </div>
-        <div class="logo-footer">
-            <img src="" alt="">
-        </div>
-        <div class="derechos-agradecimientos">
-            <p class="derechos-mastersweb">© 2025 | Todos los derechos reservados a <strong>MASTERSWEB</strong></p>
-        </div>
-        
-    </footer>
+            </div>
+            <div class="derechos-agradecimientos">
+                <p class="derechos-mastersweb">© 2025 | Todos los derechos reservados a <strong>MASTERSWEB</strong></p>
+            </div>
+            
+        </footer>
+   
     <script src="js/modal.js"></script>
     <script src="js/logo.js"></script>
     <script src="js/convertir.js"></script>
     <script src="js/menu.js"></script>
 
     <script>
-      AOS.init({ duration: 1200 });
+      AOS.init({ 
+        duration: 1200,
+        once: true, //inicia a pesar de que este ahi (forzar)
+        offset: 0 
+       });
     </script>
 </body>
 </html>

@@ -73,6 +73,7 @@ body{
   border-radius: 4px;
   font-size: 1rem;
   font-family: Impact;
+  overflow: hidden;
   font-weight: 100;
   transition: color 0.7s ease;
 }
@@ -100,6 +101,7 @@ body{
   }
   .menu-list{
     display: none;
+    overflow: hidden;
     flex-direction: column;
     position: absolute;
     top: 49px;
@@ -160,6 +162,7 @@ body{
   width: 100%;
   height: 100%;
   z-index: -1;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -168,10 +171,12 @@ body{
 .background-image{
   max-width: 70%;
   opacity: 0.2;
+  overflow: hidden;
 }
 
 .container-general{
   display: grid;
+  margin-top: 30px;
 }
 
 .titulo-container{
@@ -304,8 +309,8 @@ body{
 .container-pasos{
   display: flex;
   flex-wrap: wrap;
-    margin: auto;
-    /*padding: 25px;*/
+  margin: auto;
+  /*padding: 25px;*/
   align-items: center;
   justify-content: center;
   margin-top: 25px;
@@ -450,24 +455,26 @@ body{
   left: 0;
   border-radius: 20px 20px 0 0;
   display: flex;
+  overflow: hidden;
   flex-wrap: wrap;
 }
 
 .derechos-agradecimientos{
-  width: 35%;
+  width: 45%;
+  padding: 5px;
   font-size: clamp(12px, 1vw, 16px);
   font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   margin: auto;
 
 }
 
-.logo-footer{
+/*.logo-footer{
   width: 40%;
   height: auto;
 
-}
+}*/
 .socialmedia-footer{
-  width: 25%;
+  width: 55%;
     height: auto;
     padding: 5px;
     display: flex;
@@ -480,16 +487,16 @@ body{
 /*imgs-logo*/
 
 .instagram-footer{
-  width: 45px;
+  width: clamp(45px, 3vw, 65px);
   height: auto;
   object-fit: cover;
-  border-radius: 15px;
+  border-radius: 10px;
   cursor: pointer;
   transition: transform 0.6s ease-in;
   
 }
 .tiktok-footer{
-  width: 45px;
+  width: clamp(45px, 3vw, 65px);
   cursor: pointer;
   height: auto;
   border-radius: 15px;

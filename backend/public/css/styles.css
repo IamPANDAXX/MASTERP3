@@ -33,7 +33,50 @@ body{
   100%{
     background-position: 0% 50%;
   }
+
 }
+
+/*MANTENIMIENTO*/
+.recuadro-mantenimiento{
+  width: 50%;
+  height: 15%;
+  margin-top: 50px;
+  border-radius: 0px 20px 20px 0;
+  display: flex;
+  background-color: #ffffff;
+  box-shadow: 0 5px 2px #000000;
+  position: absolute;
+  left: 0%;
+  z-index: 5;
+  
+
+}
+
+.texto-mantenimiento{
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold';
+  color: #000000;
+  font-size: clamp(12px, 1vw, 16px);
+  width: 55%;
+  word-spacing: 2px;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  margin: auto;
+}
+
+.logo-mantenimiento{
+  width: 45%;
+  height: auto;
+  object-fit: cover;
+  margin: auto;
+  transition: transform 0.7s ease-in-out;
+}
+
+.logo-mantenimiento:hover{
+  transform: scale(1.1);
+}
+/*fin MANTENIMIENTO*/
+
 /*TOP MENU*/
 .top-menu{
   width: 100%;

@@ -38,7 +38,7 @@ body{
 
 /*MANTENIMIENTO*/
 .recuadro-mantenimiento{
-  width: 50%;
+  width: 45%;
   height: 15%;
   margin-top: 50px;
   border-radius: 0px 20px 20px 0;
@@ -55,7 +55,7 @@ body{
 .texto-mantenimiento{
   font-family: Impact, Haettenschweiler, 'Arial Narrow Bold';
   color: #000000;
-  font-size: clamp(12px, 1vw, 16px);
+  font-size: clamp(14px, 1vw, 16px);
   width: 55%;
   word-spacing: 2px;
   display: flex;

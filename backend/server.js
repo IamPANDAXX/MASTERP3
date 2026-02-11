@@ -48,52 +48,77 @@ async function obtenerTitulo(url) {
 async function intentarDescarga(url, outputTemplate, usarCookies = false) {
   return new Promise((resolve, reject) => {
     let command;
-
-    const inicio = Date.now(); //tiempo de inicio
-
+    
     if (usarCookies) {
       const cookiesPath = path.join(__dirname, "cookies.txt");
+
+      //verifica si existen cookies
       if (!fs.existsSync(cookiesPath)) {
         return reject(new Error("Cookies no disponibles"));
       }
-
+      //con cookies
       command = `python -m yt_dlp --cookies "${cookiesPath}" --no-playlist -f "bestaudio/best" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
       console.log("Intento con cookies");
     } else {
+      //sin cookies
       command = `python -m yt_dlp --no-playlist -f "bestaudio/best" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
       console.log("Intento sin cookies");
     }
 
-    const child = exec(command, async () => {
+    const child = exec(command, async (errDown, stdout, stderr) => {
       try {
+        //espera a que termine de escribir el archivo
         await new Promise(r => setTimeout(r, 500));
-
-        const mp3Files = fs.readdirSync(downloadsDir)
-          .filter(f => f.endsWith(".mp3"))
-          .map(f => ({
-            name: f,
-            time: fs.statSync(path.join(downloadsDir, f)).mtimeMs
-          }))
-          //solo archivos creados despues de iniciar
-          .filter(f => f.time >= inicio);
-
+        
+        //formatos a cambiar o convertir
+        const files = fs.readdirSync(downloadsDir);
+        const mp3Files = files.filter(f => f.endsWith('.mp3'));
+        
         if (mp3Files.length === 0) {
-          return reject(new Error("No se generó MP3 nuevo (bloqueado por YouTube)"));
+          return reject(new Error("No se creó archivo MP3"));
         }
+        
+        //obtiene el archivo más reciente
+        const newestFile = mp3Files.sort((a, b) => {
+          const statA = fs.statSync(path.join(downloadsDir, a));
+          const statB = fs.statSync(path.join(downloadsDir, b));
+          return statB.mtime - statA.mtime;
+        })[0];
 
-        //si hay varios, agarra el más reciente
-        mp3Files.sort((a, b) => b.time - a.time);
-
-        resolve(mp3Files[0].name);
+        resolve(newestFile);
       } catch (err) {
         reject(err);
       }
     });
 
+    //log limpio (solo lo importante)
+    child.stdout?.on("data", (d) => {
+      const msg = d.toString().trim();
+      if (msg.includes('[download] 100%')) {
+        console.log("Descarga completada");
+      } else if (msg.includes('[ExtractAudio]')) {
+        console.log("Convirtiendo a MP3...");
+      }
+    });
+
     child.stderr?.on("data", (d) => {
-      const msg = d.toString();
-      if (msg.includes("Sign in to confirm")) {
-        console.warn("YouTube detectó bot");
+      const msg = d.toString().trim();
+      
+      //filtrar warnings conocidos que no importan
+      const ignorar = [
+        'not a valid URL',
+        'WARNING',
+        'PO Token',
+        'Skipping client'
+      ];
+      
+      if (ignorar.some(txt => msg.includes(txt))) {
+        return; //no imprime la basura del (ignorar)
+      }
+      
+      //solo errores pasados de versa
+      if (msg.includes('ERROR')) {
+        console.error("!", msg);
       }
     });
   });

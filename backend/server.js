@@ -29,7 +29,6 @@ if (!fs.existsSync(downloadsDir)) fs.mkdirSync(downloadsDir, { recursive: true }
 
 //servir archivos estáticos (frontend)
 app.use(express.static(publicPath));
-
 //servir MP3 descargados
 app.use("/downloads", express.static(downloadsDir));
 
@@ -45,6 +44,86 @@ async function obtenerTitulo(url) {
   }
 }
 
+//funcion para auxiliar la descarga (si ocupa cookies o no)
+async function intentarDescarga(url, outputTemplate, usarCookies = false) {
+  return new Promise((resolve, reject) => {
+    let command;
+    
+    if (usarCookies) {
+      const cookiesPath = path.join(__dirname, "cookies.txt");
+      
+      //verifica si existen cookies
+      if (!fs.existsSync(cookiesPath)) {
+        return reject(new Error("Cookies no disponibles"));
+      }
+      //con cookies
+      command = `python -m yt_dlp --cookies "${cookiesPath}" --no-playlist -f "bestaudio/best" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
+      console.log("Intento con cookies");
+    } else {
+      //sin cookies
+      command = `python -m yt_dlp --no-playlist -f "bestaudio/best" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
+      console.log("Intento sin cookies");
+    }
+
+    const child = exec(command, async (errDown, stdout, stderr) => {
+      try {
+        //espera a que termine de escribir el archivo
+        await new Promise(r => setTimeout(r, 500));
+        
+        //formatos a cambiar o convertir
+        const files = fs.readdirSync(downloadsDir);
+        const mp3Files = files.filter(f => f.endsWith('.mp3'));
+        
+        if (mp3Files.length === 0) {
+          return reject(new Error("No se creó archivo MP3"));
+        }
+        
+        //obtiene el archivo más reciente
+        const newestFile = mp3Files.sort((a, b) => {
+          const statA = fs.statSync(path.join(downloadsDir, a));
+          const statB = fs.statSync(path.join(downloadsDir, b));
+          return statB.mtime - statA.mtime;
+        })[0];
+
+        resolve(newestFile);
+      } catch (err) {
+        reject(err);
+      }
+    });
+
+    //log limpio (solo lo importante)
+    child.stdout?.on("data", (d) => {
+      const msg = d.toString().trim();
+      if (msg.includes('[download] 100%')) {
+        console.log("Descarga completada");
+      } else if (msg.includes('[ExtractAudio]')) {
+        console.log("Convirtiendo a MP3...");
+      }
+    });
+
+    child.stderr?.on("data", (d) => {
+      const msg = d.toString().trim();
+      
+      //filtrar warnings conocidos que no importan
+      const ignorar = [
+        'not a valid URL',
+        'WARNING',
+        'PO Token',
+        'Skipping client'
+      ];
+      
+      if (ignorar.some(txt => msg.includes(txt))) {
+        return; //no imprime la basura del (ignorar)
+      }
+      
+      //solo errores pasados de versa
+      if (msg.includes('ERROR')) {
+        console.error("!", msg);
+      }
+    });
+  });
+}
+
 //Endpoint principal de conversión
 app.post("/convert", async (req, res) => {
   const { url } = req.body;
@@ -55,44 +134,51 @@ app.post("/convert", async (req, res) => {
 
   console.log("Procesando:", url);
 
-  //verificamos si es de youtube
-  const esYouTube = /youtube\.com|youtu\.be/.test(url);
+  //const esYouTube = /youtube\.com|youtu\.be/.test(url);
 
-  //obtener título con noembed
-  const title = await obtenerTitulo(url);
-  const safeTitle = title.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
-  const fileName = `${safeTitle}.mp3`;
-  const outputPath = path.join(downloadsDir, fileName);
+  //funcion template
+  const outputTemplate = path.join(downloadsDir, "%(title)s.%(ext)s");
 
-  //comando base
-  let command;
-  if (esYouTube) {
-    //usa cookies si es YouTube
-    const cookiesPath = path.join(__dirname, "cookies.txt");
-    command = `python -m yt_dlp --cookies "${cookiesPath}" -x --audio-format mp3 -o "${outputPath}" "${url}"`;
-    console.log("Modo YouTube activado con cookies");
-  } else {
-    //sin cookies para otros sitios
-    command = `python -m yt_dlp -x --audio-format mp3 -o "${outputPath}" "${url}"`;
-    console.log("Modo sin cookies (sitio no YouTube)");
-  }
-
-  const child = exec(command, (errDown) => {
-    if (errDown) {
-      console.error("Error al convertir:", errDown.message);
-      return res.status(500).json({ error: "Error al procesar el video" });
-    }
-
-    console.log(`Conversión completada: ${fileName}`);
-    res.json({
+  try {
+    //intentar sin cookies primero
+    const archivo = await intentarDescarga(url, outputTemplate, false);
+    console.log(`Exito sin cookies: ${archivo}`);
+    
+    const title = await obtenerTitulo(url);
+    const safeTitle = title.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
+    
+    return res.json({
       success: true,
       title: safeTitle,
-      file: `/downloads/${encodeURIComponent(fileName)}`
+      file: `/downloads/${encodeURIComponent(archivo)}`,
+      method: 'sin-cookies'
     });
-  });
-
-  child.stdout?.on("data", (d) => console.log("yt-dlp:", d.toString().trim()));
-  child.stderr?.on("data", (d) => console.log("yt-dlp error:", d.toString().trim()));
+    
+  } catch (error1) {
+    console.log("Falló sin cookies, activando con cookies...");
+    
+    try {
+      //intentar con cookies
+      const archivo = await intentarDescarga(url, outputTemplate, true);
+      console.log(`Éxito con cookies: ${archivo}`);
+      
+      const title = await obtenerTitulo(url);
+      const safeTitle = title.replace(/[<>:"/\\|?*]/g, "").replace(/\s+/g, " ").trim();
+      
+      return res.json({
+        success: true,
+        title: safeTitle,
+        file: `/downloads/${encodeURIComponent(archivo)}`,
+        method: 'con-cookies'
+      });
+      
+    } catch (error2) {
+      console.error("sin cookies nopi, con cookies ahora...");
+      return res.status(500).json({ 
+        error: "No se pudo procesar el video. Puede tener restricciones de edad o región." 
+      });
+    }
+  }
 });
 
 //ruta raíz (sirve el index)

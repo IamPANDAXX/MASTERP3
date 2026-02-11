@@ -49,7 +49,7 @@ async function intentarDescarga(url, outputTemplate, usarCookies = false) {
   return new Promise((resolve, reject) => {
     let command;
 
-    const inicio = Date.now(); // ⬅️ TIEMPO DE INICIO
+    const inicio = Date.now(); //tiempo de inicio
 
     if (usarCookies) {
       const cookiesPath = path.join(__dirname, "cookies.txt");
@@ -74,14 +74,14 @@ async function intentarDescarga(url, outputTemplate, usarCookies = false) {
             name: f,
             time: fs.statSync(path.join(downloadsDir, f)).mtimeMs
           }))
-          // ⬅️ SOLO archivos creados DESPUÉS de iniciar
+          //solo archivos creados despues de iniciar
           .filter(f => f.time >= inicio);
 
         if (mp3Files.length === 0) {
           return reject(new Error("No se generó MP3 nuevo (bloqueado por YouTube)"));
         }
 
-        // si hay varios, agarra el más reciente
+        //si hay varios, agarra el más reciente
         mp3Files.sort((a, b) => b.time - a.time);
 
         resolve(mp3Files[0].name);
@@ -93,7 +93,7 @@ async function intentarDescarga(url, outputTemplate, usarCookies = false) {
     child.stderr?.on("data", (d) => {
       const msg = d.toString();
       if (msg.includes("Sign in to confirm")) {
-        console.warn("⚠️ YouTube detectó bot");
+        console.warn("YouTube detectó bot");
       }
     });
   });

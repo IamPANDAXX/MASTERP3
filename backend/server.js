@@ -32,6 +32,18 @@ app.use(express.static(publicPath));
 //servir MP3 descargados
 app.use("/downloads", express.static(downloadsDir));
 
+function normalizarYouTubeURL(url) {
+  try {
+    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+    if (match && match[1]) {
+      return `https://www.youtube.com/watch?v=${match[1]}`;
+    }
+    return url;
+  } catch {
+    return url;
+  }
+}
+
 //función para obtener el título usando noembed (sin cookies)
 async function obtenerTitulo(url) {
   try {
@@ -129,7 +141,9 @@ async function intentarDescarga(url, outputTemplate, usarCookies = false) {
 
 //Endpoint principal de conversión
 app.post("/convert", async (req, res) => {
-  const { url } = req.body;
+  let { url } = req.body;
+  url = normalizarYouTubeURL(url);
+  console.log("URL limpia:", url);
 
   if (!url || !url.startsWith("http")) {
     return res.status(400).json({ error: "URL no válida" });

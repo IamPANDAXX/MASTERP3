@@ -82,10 +82,10 @@ async function intentarDescarga(url, outputTemplate, usarCookies = false) {
 
     const child = exec(command, async (errDown, stdout, stderr) => {
       //si falla no entrega nada!
-       if (errDown) {
+       /*if (errDown) {
           console.error("MASTERP3 FALLO!:", errDown.message);
           return reject(errDown);
-        }
+        }*/
 
       try {
         //espera a que termine de escribir el archivo

@@ -106,6 +106,12 @@ async function intentarDescarga(url, outputTemplate, usarCookies = false) {
           return statB.mtime - statA.mtime;
         })[0];
 
+        //ahora si no descarga y no duevuelve mmdas
+        if(errDown && !fs.existsSync(path.join(downloadsDir, newestFile))) {
+          console.error("MASTERP3 FALLO!", errDown.message);
+          return reject(errDown);
+        }
+
         resolve(newestFile);
       } catch (err) {
         reject(err);

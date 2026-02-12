@@ -47,6 +47,9 @@ async function obtenerTitulo(url) {
 //funcion para auxiliar la descarga (si ocupa cookies o no)
 async function intentarDescarga(url, outputTemplate, usarCookies = false) {
   return new Promise((resolve, reject) => {
+
+    const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
     let command;
     
     if (usarCookies) {
@@ -57,7 +60,7 @@ async function intentarDescarga(url, outputTemplate, usarCookies = false) {
         return reject(new Error("Cookies no disponibles"));
       }
       //con cookies
-      command = `python -m yt_dlp --cookies "${cookiesPath}" --no-playlist -f "bestaudio/best" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
+      command = `python -m yt_dlp --user-agent "${userAgent}" --cookies "${cookiesPath}" --no-playlist -f "bestaudio/best" -x --audio-format mp3 -o "${outputTemplate}" "${url}"`;
       console.log("Intento con cookies");
     } else {
       //sin cookies

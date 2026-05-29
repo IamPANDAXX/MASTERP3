@@ -6,7 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 import fetch from "node-fetch"; //usamos esto para obtener el título automáticamente
-import "./alive.js";
+/*import "./alive.js";*/ /*la matamos*/
 
 const app = express();
 app.use(cors());
@@ -105,12 +105,6 @@ async function intentarDescarga(url, outputTemplate, usarCookies = false) {
           const statB = fs.statSync(path.join(downloadsDir, b));
           return statB.mtime - statA.mtime;
         })[0];
-
-        //ahora si no descarga y no duevuelve mmdas
-        if(errDown && !fs.existsSync(path.join(downloadsDir, newestFile))) {
-          console.error("MASTERP3 FALLO!", errDown.message);
-          return reject(errDown);
-        }
 
         resolve(newestFile);
       } catch (err) {
